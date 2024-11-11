@@ -1,0 +1,7 @@
+# OllamaTea .gitignore
+
+.task
+.DS_Store
+bin/
+
+./hello.png

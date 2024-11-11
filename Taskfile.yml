@@ -1,0 +1,46 @@
+# ollamatea Taskfile.yml
+# Copyright (c) 2024 Neomantra Corp
+
+version: '3'
+
+tasks:
+  default:
+    desc: 'Default task runs the "build" task'
+    deps:
+      - build
+
+  list:
+    desc: 'Lists available tasks'
+    cmds:
+      - task --list-all
+
+###############################################################################
+
+  tidy:
+    desc: 'Go tidy all the things'
+    cmds:
+      - go mod tidy
+
+  build:
+    desc: 'Build all the things'
+    deps: [tidy]
+    cmds:
+      - go build
+      - go build -o bin/ot-ansi-to-png cmd/ot-ansi-to-png/main.go
+      - go build -o bin/ot-png-prompt cmd/ot-png-prompt/main.go
+      - go build -o bin/ot-simplegen cmd/ot-simplegen/main.go
+      - go build -o bin/ot-timechart cmd/ot-timechart/main.go
+
+  clean:
+    desc: 'Clean all the things'
+    cmds:
+      - rm bin/ot-ansi-to-png
+      - rm bin/ot-png-prompt
+      - rm bin/ot-simplegen
+      - rm bin/ot-timechart
+
+  test:
+    desc: 'Test all the things'
+    deps: [build]
+    cmds:
+      - go test

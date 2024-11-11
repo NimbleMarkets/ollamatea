@@ -1,0 +1,87 @@
+# .goreleaser.yml file
+# Copyright (c) 2024 Neomantra Corp
+# Documentation at http://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: ot-ansi-to-png
+    main: cmd/ot-ansi-to-png/main.go
+    binary: bin/ot-ansi-to-png
+    goos:
+      - linux
+      - windows
+      - darwin
+
+  - id: ot-png-prompt
+    main: cmd/ot-png-prompt/main.go
+    binary: bin/ot-png-prompt
+    goos:
+      - linux
+      - windows
+      - darwin
+
+  - id: ot-simplegen
+    main: cmd/ot-simplegen/main.go
+    binary: bin/ot-simplegen
+    goos:
+      - linux
+      - windows
+      - darwin
+
+  - id: ot-timechart
+    main: cmd/ot-timechart/main.go
+    binary: bin/ot-timechart
+    goos:
+      - linux
+      - windows
+      - darwin
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: NimbleMarkets
+    name: ollamatea
+
+brews:
+  - homepage: https://github.com/NimbleMarkets/ollamatea
+    description: "BubbleTea and Ollama components/tools"
+    directory: Formula
+    repository:
+      owner: NimbleMarkets
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: goreleaserbot@nimble.markets
+    install: |
+      bin.install "./bin/ot-ansi-to-png"
+      bin.install "./bin/ot-png-prompt"
+      bin.install "./bin/ot-simplegen"
+      bin.install "./bin/ot-timechart"
