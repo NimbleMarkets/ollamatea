@@ -3,5 +3,6 @@
 .task
 .DS_Store
 bin/
+dist/
 
 ./hello.png
