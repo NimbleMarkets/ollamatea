@@ -5,7 +5,7 @@
     <tr><td>
       <img src="./tests/ollamatea-512.png" width="200" alt="Picture of OllamaTea's Mascot, a llama with a mohawk and goldchains wearing a T-shirt while Bubbles float around them.">
     </td><td>
-      <img src="cmd/ot-simplegen/demo.gif" height="150" alt="ot-simplegen demo">
+      <img src="cmd/ot-simplegen/demo.gif" width="400" alt="ot-simplegen demo">
     </td></tr>
   </table>
   <pre>I pity the fool without local terminal inferencing... -OT</pre>
@@ -128,7 +128,7 @@ Example:  $ echo -e "\033[31mHello\033[0m World" | ot-ansi-to-png --out hello.pn
 
 `ot-model-chooser` is a minimal example using the `ollamatea.ModelChooser` BubbleTea component.  [See above](#ollamateamodelchooser).
 
-<img src="./cmd/ot-model-chooser/demo.gif" height="150" alt="Model Chooser Demo">
+<img src="./cmd/ot-model-chooser/demo.gif" width="600" alt="Model Chooser Demo">
 
 ### `ot-png-prompt`
 
@@ -183,7 +183,7 @@ A hello to the world, in digital daze.
 
 `ot-simplegen` is a minimal simple chat generation example using little more than the `ollamatea.ChatPanelModel` BubbleTea component.
 
-<img src="cmd/ot-simplegen/demo.gif" height="150" alt="ot-simplegen demo">
+<img src="cmd/ot-simplegen/demo.gif" width="600" alt="ot-simplegen demo">
 
 ### `ot-timechart`
 
@@ -215,7 +215,7 @@ See https://github.com/NimbleMarkets/ollamatea/tree/main/cmd/ot-timechart
   -z, --zstd            Input is ZSTD compressed (otherwise uses filename ending in .zst or zstd)
 ```
 
-<img src="./cmd/ot-timechart/demo.gif" height="150" alt="ot-timechart demo">
+<img src="./cmd/ot-timechart/demo.gif" width="600" alt="ot-timechart demo">
 
 ## Open Collaboration
 
