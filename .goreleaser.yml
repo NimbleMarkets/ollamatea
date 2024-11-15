@@ -17,6 +17,14 @@ builds:
       - windows
       - darwin
 
+  - id: ot-model-chooser
+    main: cmd/ot-model-chooser/main.go
+    binary: bin/ot-model-chooser
+    goos:
+      - linux
+      - windows
+      - darwin
+
   - id: ot-png-prompt
     main: cmd/ot-png-prompt/main.go
     binary: bin/ot-png-prompt
@@ -82,6 +90,7 @@ brews:
       email: goreleaserbot@nimble.markets
     install: |
       bin.install "./bin/ot-ansi-to-png"
+      bin.install "./bin/ot-model-chooser"
       bin.install "./bin/ot-png-prompt"
       bin.install "./bin/ot-simplegen"
       bin.install "./bin/ot-timechart"

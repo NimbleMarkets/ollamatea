@@ -1,18 +1,24 @@
 # OllamaTea - BubbleTea Component for Ollama
 
 <p>
-    <img src="./tests/ollamatea-512.png" height="150" alt="Picture of OllamaTea's Mascot, a llama with a mohawk and goldchains wearing a T-shirt while Bubbles float around them."><br>
-    <pre>I pity the fool without local terminal inferencing... -OT</pre><br>
+  <table>
+    <tr><td>
+      <img src="./tests/ollamatea-512.png" width="200" alt="Picture of OllamaTea's Mascot, a llama with a mohawk and goldchains wearing a T-shirt while Bubbles float around them.">
+    </td><td>
+      <img src="cmd/ot-simplegen/demo.gif" height="150" alt="ot-simplegen demo">
+    </td></tr>
+  </table>
+  <pre>I pity the fool without local terminal inferencing... -OT</pre>
     <a href="https://github.com/NimbleMarkets/ollamatea/tags"><img src="https://img.shields.io/github/tag/NimbleMarkets/ollamatea.svg" alt="Latest Release"></a>
     <a href="https://pkg.go.dev/github.com/NimbleMarkets/ollamatea?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="GoDoc"></a>
     <a href="https://github.com/NimbleMarkets/ollamatea/blob/main/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"  alt="Code Of Conduct"></a>
 </p>
 
-**This is an experimental project.  Interfaces will change and defects are likely.**
+**This is an experimental project.**
 
-[`ollamatea`](https://www.github.com/NimbleMarkets/ollamatea) is a [Bubble Tea](https://github.com/charmbracelet/bubbletea) Component for integrating terminal experiences with an [Ollama LLM server](https://ollama.com).  It offers a base `ollamaTea.Session` component, a simple out-of-the-box `OllamaSessionChat` TUI widget, and some example [tools](#tools) which explore them.
+[`ollamatea`](https://www.github.com/NimbleMarkets/ollamatea) is a [Bubble Tea](https://github.com/charmbracelet/bubbletea) Component for integrating terminal experiences with an [Ollama LLM server](https://ollama.com).  It offers a base [`ollamaTea.Session` component](#ollamateasession), a simple out-of-the-box [`ollamatea.ChatPanelModel` widget](#ollamateachatpanelmodel), a [`ollamatea.ModelChooser` widget](#ollamateamodelchooser), and some example [tools](#tools) which demonstrate them.
 
-You must have access to an Ollama server to use these tools.  [Follow their instructions](https://ollama.com/download) to install a service locally.
+You must have access to an Ollama server to use these tools.  [Follow the Ollama's instructions](https://ollama.com/download) to install a service locally.
 
 To import the `ollamatea` library, use this Go module statement:
 ```go
@@ -24,16 +30,18 @@ import (
 To install OllamaTea's various [`ot-` tools](#tools):
 
  * Download them from the [`ollamatea` releases page](https://github.com/NimbleMarkets/ollamatea/releases)
- * Or install with [Homebrew](https://brew.sh): `brew install NimbleMarkets/homebrew-tap/dbn-go`
+ * Or install with [Homebrew](https://brew.sh): `brew install NimbleMarkets/homebrew-tap/ollamatea`
 
 ## Table of Contents
 
  * [Components](#components)
    * [`ollamatea.Session`](#ollamatea-session)
-   * [`ollamatea.Chat`](#ollamatea-chat)
+   * [`ollamatea.ChatPanelModel`](#ollamatea-chatpanelmodel)
+   * [`ollamatea.ModelChooser`](#ollamatea-modelchooser)
  * [Configuration](#configuration)
  * [Tools](#tools)
    * [`ot-ansi-to-image`](#ot-ansi-to-image)
+   * [`ot-model-chooser`](#ot-model-chooser)
    * [`ot-png-prompt`](#ot-png-prompt)
    * [`ot-simplegen`](#ot-simplegen)
    * [`ot-timechart`](#ot-timechart)
@@ -75,6 +83,11 @@ To see an example of using `ollamatea.Session`, see [the implementation](./ollam
 The [`ot-simplegen` tool](#ot-simplegen) is a [minimal example](./cmd/ot-simplegen/main.go) using this component.
 
 *TODO: `ollamatea.ChatPanelModel` features are currently in flux -- the hope is to add a bit more to make it a minimal, but very useful component*
+*TODO: picture here
+
+### `ollamatea.ModelChooser`
+
+`ollamatea.ModelChooser` is a simple BubbleTea TUI Model which can be incorporated into your own TUI.  The `ot-model-chooser` is a minimal example using it.   There is also bare `FetchModelList` machinery to create custom experiences.
 
 ## Configuration
 
@@ -110,6 +123,12 @@ Example:  $ echo -e "\033[31mHello\033[0m World" | ot-ansi-to-png --out hello.pn
   -i, --in string    Input text filename (default: stdin)
   -o, --out string   Output PNG filename ('-' is stdout)
 ```
+
+### `ot-model-chooser`
+
+`ot-model-chooser` is a minimal example using the `ollamatea.ModelChooser` BubbleTea component.  [See above](#ollamateamodelchooser).
+
+<img src="./cmd/ot-model-chooser/demo.gif" height="150" alt="Model Chooser Demo">
 
 ### `ot-png-prompt`
 
@@ -162,7 +181,9 @@ A hello to the world, in digital daze.
 
 ### `ot-simplegen`
 
-`ot-simplegen` is a simple chat generation example using little more than the `ollamatea.ChatPanelModel` BubbleTea component.
+`ot-simplegen` is a minimal simple chat generation example using little more than the `ollamatea.ChatPanelModel` BubbleTea component.
+
+<img src="cmd/ot-simplegen/demo.gif" height="150" alt="ot-simplegen demo">
 
 ### `ot-timechart`
 
@@ -170,7 +191,7 @@ A hello to the world, in digital daze.
 
 Of course, one might feed the chart data directly to Ollama, or perhaps render images it with higher fidelity (e.g. headless HTML charting to images).  But abstractly this workflow could work with any ANSI text display or BubbleTea component `View()`.  It might be an interesting avenue to explore for some interfaces.
 
-This expands on some of the ideas in this [`ntcharts` accessibility issue](https://github.com/NimbleMarkets/ntcharts/issues/2).
+This work expands on some of the ideas in this [`ntcharts` accessibility issue](https://github.com/NimbleMarkets/ntcharts/issues/2).  You can see an example with market data on the [`ot-timechart` README](./cmd/ot-timechart/README.md).
 
 ```
 usage:  ./bin/ot-timechart [--help] [options] --in <input-csv-filename>
@@ -194,6 +215,8 @@ See https://github.com/NimbleMarkets/ollamatea/tree/main/cmd/ot-timechart
   -z, --zstd            Input is ZSTD compressed (otherwise uses filename ending in .zst or zstd)
 ```
 
+<img src="./cmd/ot-timechart/demo.gif" height="150" alt="ot-timechart demo">
+
 ## Open Collaboration
 
 We welcome contributions and feedback.  Please adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md) when engaging our community.
@@ -203,7 +226,7 @@ We welcome contributions and feedback.  Please adhere to our [Code of Conduct](.
 
 ## Acknowledgements
 
-Thanks to to [Charm.sh](https://charm.sh) for making the command line glamorous and sharing [Bubble Tea](https://github.com/charmbracelet/bubbletea), [`go-ansi-to-image`](https://github.com/pavelpatrin/go-ansi-to-image) for the image heavy lifting, and to [Ollama](https://ollama.com) for the inferencing.
+Thanks to to [Charm.sh](https://charm.sh) for making the command line glamorous and sharing [Bubble Tea](https://github.com/charmbracelet/bubbletea) and thanks to [Ollama](https://ollama.com) for making local inferencing so easy.
 
 ## License
 

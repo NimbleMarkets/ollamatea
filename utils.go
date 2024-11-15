@@ -37,13 +37,6 @@ func ConvertTerminalTextToImage(terminalText string, convertConfig *ansitoimage.
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// newBoolPtr returns a pointer to a new bool holding the argument's value.
-// Used for one-line instantiation of bool pointers for struct initialization.
-func newBoolPtr(bv bool) *bool {
-	b := bv
-	return &b
-}
-
 // Cmdize is a utility function to convert a given value into a `tea.Cmd`
 // https://github.com/KevM/bubbleo/blob/main/utils/utils.go
 func Cmdize[T any](t T) tea.Cmd {

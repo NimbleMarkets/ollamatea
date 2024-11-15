@@ -27,6 +27,7 @@ tasks:
     cmds:
       - go build
       - go build -o bin/ot-ansi-to-png cmd/ot-ansi-to-png/main.go
+      - go build -o bin/ot-model-chooser cmd/ot-model-chooser/main.go
       - go build -o bin/ot-png-prompt cmd/ot-png-prompt/main.go
       - go build -o bin/ot-simplegen cmd/ot-simplegen/main.go
       - go build -o bin/ot-timechart cmd/ot-timechart/main.go
@@ -35,6 +36,7 @@ tasks:
     desc: 'Clean all the things'
     cmds:
       - rm bin/ot-ansi-to-png
+      - rm bin/ot-model-chooser
       - rm bin/ot-png-prompt
       - rm bin/ot-simplegen
       - rm bin/ot-timechart

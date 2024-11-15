@@ -67,7 +67,7 @@ type GenerateDoneMsg struct {
 
 //////////////////////////////////////////////////////////////////////////////
 
-// Internal ID management. Ensure that messages are received
+// Internal Session ID management. Ensure that messages are received
 // only by components that sent them.
 var lastSessionID int64
 
@@ -172,7 +172,7 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.isGenerating = false
 			// TODO: done message send?
 		}
-		return m, m.startGenerating
+		return m, m.startGenerating()
 
 	case StopGenerateMsg:
 		if msg.ID != m.id {
@@ -222,7 +222,7 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// View renders the OllamaTeaModel's view.
+// View renders the Sessions's view.
 // This is will either be an error message, a "..." waiting string, or the Ollama response.
 // We often set up other components for the TUI chrome and ignore this View.
 func (m *Session) View() string {
@@ -235,7 +235,7 @@ func (m *Session) View() string {
 //////////////////////////////////////////////////////////////////////////////
 
 // startGenerating
-func (m *Session) startGenerating() tea.Msg {
+func (m *Session) startGenerating() tea.Cmd {
 	if m.isGenerating {
 		return nil
 	}
@@ -246,8 +246,7 @@ func (m *Session) startGenerating() tea.Msg {
 	if err != nil {
 		m.lastError = err
 		m.isGenerating = false
-		// TODO: done  message with error
-		return nil
+		return Cmdize(makeGenerateDoneErrorMsg(m.id, err))
 	}
 
 	ollamaClient := ollama.NewClient(ollamaURL, http.DefaultClient)
@@ -277,9 +276,19 @@ func (m *Session) startGenerating() tea.Msg {
 	err = ollamaClient.Generate(m.ctx, req, respFunc)
 	if err != nil {
 		m.lastError = err
-		return err
+		return Cmdize(makeGenerateDoneErrorMsg(m.id, err))
 	}
 	return nil
+}
+
+func makeGenerateDoneErrorMsg(id int64, err error) tea.Msg {
+	return GenerateDoneMsg{
+		ID:         id,
+		Response:   "",
+		CreatedAt:  time.Now(),
+		DoneReason: err.Error(),
+		Context:    nil,
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////

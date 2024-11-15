@@ -46,6 +46,17 @@
             },
         },
         {
+            "name": "Attach ot-model-chooser",
+            "type": "go",
+            "debugAdapter": "dlv-dap",
+            "request": "attach",
+            "mode": "remote",
+            "remotePath": "${workspaceFolder}/cmd/ot-model-chooser",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "preLaunchTask": "Run ot-model-chooser withheadless dlv"
+        },
+        {
             "name": "Attach ot-simplegen",
             "type": "go",
             "debugAdapter": "dlv-dap",
