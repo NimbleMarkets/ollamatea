@@ -193,7 +193,7 @@ type fetchListMsg struct {
 	OllamaHost string // Ollama Host generating the response
 }
 
-func (m ModelChooser) startFetching() tea.Cmd {
+func (m ModelChooser) startFetchingCmd() tea.Cmd {
 	return func() tea.Msg {
 		return FetchModelList(m.ollamaHost, m.id)
 	}
@@ -242,7 +242,7 @@ func (m ModelChooser) Update(msg tea.Msg) (ModelChooser, tea.Cmd) {
 		}
 		// TODO: cancel current
 		m.isFetching = true
-		return m, tea.Batch(m.startFetching(), m.spinner.Tick)
+		return m, tea.Batch(m.startFetchingCmd(), m.spinner.Tick)
 
 	case FetchModelListResponseMsg:
 		if msg.ID != m.id {

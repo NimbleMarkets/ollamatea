@@ -25,13 +25,6 @@ var usageFormat string = `usage:  %s [--help] [options] --in <input-csv-filename
 `
 
 /////////////////////////////////////////////////////////////////////////////////////
-// Style
-
-// var defaultStyle = lipgloss.NewStyle().
-// 	BorderStyle(lipgloss.NormalBorder()).
-// 	BorderForeground(lipgloss.Color("63")) // purple
-
-/////////////////////////////////////////////////////////////////////////////////////
 // simpleGenModel
 
 type simpleGenModel struct {

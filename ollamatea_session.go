@@ -172,7 +172,7 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.isGenerating = false
 			// TODO: done message send?
 		}
-		return m, m.startGenerating()
+		return m, m.startGeneratingCmd()
 
 	case StopGenerateMsg:
 		if msg.ID != m.id {
@@ -214,8 +214,9 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			Context:    msg.Context,
 		}
 
-		return m, tea.Batch(
-			tea.Sequence(Cmdize(respMsg), Cmdize(doneMsg)),
+		return m, tea.Sequence(
+			Cmdize(respMsg),
+			Cmdize(doneMsg),
 			waitForResponse(m.respCh),
 		)
 	}
@@ -235,7 +236,13 @@ func (m *Session) View() string {
 //////////////////////////////////////////////////////////////////////////////
 
 // startGenerating
-func (m *Session) startGenerating() tea.Cmd {
+func (m *Session) startGeneratingCmd() tea.Cmd {
+	return func() tea.Msg {
+		return m.startGenerating()
+	}
+}
+
+func (m *Session) startGenerating() tea.Msg {
 	if m.isGenerating {
 		return nil
 	}
