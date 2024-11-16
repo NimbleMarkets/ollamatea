@@ -1,5 +1,37 @@
 # ot-timechart
 
+`ot-timechart` reads `time,value` data from a CSV file, displays it in as [ntchart `timeserieslinechart`](https://github.com/NimbleMarkets/ntcharts/tree/main/examples#time-series), renders that to a PNG image, and then feeds that to Ollama with a prompt.
+
+Of course, one might feed the chart data directly to Ollama, or perhaps render images it with higher fidelity (e.g. headless HTML charting to images).  But abstractly this workflow could work with any ANSI text display or BubbleTea component `View()`.  It might be an interesting avenue to explore for some interfaces.
+
+This work expands on some of the ideas in this [`ntcharts` accessibility issue](https://github.com/NimbleMarkets/ntcharts/issues/2).  You can see an example with market data on the [`ot-timechart` README](./cmd/ot-timechart/README.md).
+
+```
+usage:  ./bin/ot-timechart [--help] [options] --in <input-csv-filename>
+
+A mini-TUI for generating an Ollama response from a simple CSV file.
+The CSV file should have a header row with the first column being the time.
+
+The prompt may be specified with  --prompt or the OLLAMATEA_PROMPT envvar.
+The default prompt is:
+  Describe this image for a visually impaired person'.
+
+See https://github.com/NimbleMarkets/ollamatea/tree/main/cmd/ot-timechart
+
+      --braille         use braille lines (default: arc lines)
+      --help            show help
+  -h, --host string     Host for Ollama (also OLLAMATEA_HOST env) (default "http://localhost:11434")
+  -i, --in string       Input CSV filename ('-' is stdin)
+  -m, --model string    Model for Ollama (also OLLAMATEA_MODEL env) (default "llama3.2-vision:11b")
+  -p, --prompt string   Prompt for Ollama (see --help for default)
+  -v, --verbose         verbose output
+  -z, --zstd            Input is ZSTD compressed (otherwise uses filename ending in .zst or zstd)
+```
+
+# DataBento Data Example
+
+<img src="./demo.gif" width="600" alt="ot-timechart demo">
+
 `ot-timechart` plots a CSV file using [our `ntcharts` Terminal Charting library](https://github.com/NimbleMarkets/ntcharts) and performs an inference of it.
 
 We test this quick by piping an `echo` of the CSV to `ot-timechart` via `stidin`, and using `--in` with the special filename `-`:
