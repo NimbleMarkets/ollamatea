@@ -13,8 +13,11 @@ Some things to explore:
   * model selection UI?
   * more keyboard navigation
   * more focus work
+  * stopwatch
   
  * Configure the ANSI renderer (back/fore color, window size, etc?)
+
+ * `DownloadProgressModel` for tracking model downloads
 
  * Pointer receiver or value receivers?
 

@@ -228,6 +228,12 @@ We welcome contributions and feedback.  Please adhere to our [Code of Conduct](.
 
 Thanks to to [Charm.sh](https://charm.sh) for making the command line glamorous and sharing [Bubble Tea](https://github.com/charmbracelet/bubbletea) and thanks to [Ollama](https://ollama.com) for making local inferencing so easy.
 
+This is still a developing library and is focused on providing widgets and examples thereof.  Here's some other handy Ollama TUI applications that are more polished:
+
+ * [Gollama](https://github.com/sammcj/gollama?tab=readme-ov-file#gollama) model manager
+ * [Parlamma](https://github.com/paulrobello/parllama?tab=readme-ov-file#screenshots) LLM explorer
+ * [Charmlama](https://github.com/marpit19/charmlama) chat interface
+
 ## License
 
 Released under the [MIT License](https://en.wikipedia.org/wiki/MIT_License), see [LICENSE.txt](./LICENSE.txt).  Authored by [Evan Wies](https://github.com/neomantra/).

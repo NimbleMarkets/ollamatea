@@ -41,14 +41,14 @@ type generateResponseMsg struct {
 
 // GenerateResponseMsg is the message generated each time there is a reply from Ollama.
 // The information contained is only partial.
-// To check what has been received so far in the request, check [OllamataTeaSession.GetResponse()]
+// To check what has been received so far in the request, check [Session.Response()]
 // To focus solely on full responses, listen for GenerateDoneMsg.
 type GenerateResponseMsg struct {
 	ID        int64     // ID is the generation session ID corresponding to the Response
 	CreatedAt time.Time // CreatedAt is the timestamp of the response.
 
 	// Response is the textual response in this specific call.
-	// Use [GenerateDoneMsg] or [Session.GetResponse()] for fuller responses.
+	// Use [GenerateDoneMsg] or [Session.Response()] for fuller responses.
 	Response string
 }
 

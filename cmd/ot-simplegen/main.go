@@ -28,15 +28,15 @@ var usageFormat string = `usage:  %s [--help] [options] --in <input-csv-filename
 // simpleGenModel
 
 type simpleGenModel struct {
-	Title     string // TODO: connect to chatPanel Viewport Title or something?
 	chatPanel ollamatea.ChatPanelModel
 }
 
-func newSimpleGenModel() simpleGenModel {
-	return simpleGenModel{
-		Title:     "SimpleGen",
+func newSimpleGenModel(title string) simpleGenModel {
+	m := simpleGenModel{
 		chatPanel: ollamatea.NewChatPanel(ollamatea.NewSession()),
 	}
+	m.chatPanel.Title = title
+	return m
 }
 
 func (m simpleGenModel) Init() tea.Cmd {
@@ -64,11 +64,12 @@ func (m simpleGenModel) View() string {
 /////////////////////////////////////////////////////////////////////////////////////
 
 func main() {
-	var ollamaHost, ollamaModel string
+	var ollamaHost, ollamaModel, chatTitle string
 	var verbose, showHelp bool
 
 	pflag.StringVarP(&ollamaHost, "host", "h", ollamatea.DefaultHost(), "Host for Ollama (also OLLAMATEA_HOST env)")
 	pflag.StringVarP(&ollamaModel, "model", "m", ollamatea.DefaultModel(), "Model for Ollama (also OLLAMATEA_MODEL env)")
+	pflag.StringVarP(&chatTitle, "title", "t", "simplegen", "Title for chat")
 	pflag.BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	pflag.BoolVarP(&showHelp, "help", "", false, "show help")
 	pflag.Parse()
@@ -83,7 +84,7 @@ func main() {
 	}
 
 	// Create simpleGenModel and run the BubbleTea Program
-	m := newSimpleGenModel()
+	m := newSimpleGenModel(chatTitle)
 	_, err := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion()).Run()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())

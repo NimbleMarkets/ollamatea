@@ -91,8 +91,9 @@ var modelChooserExtraKeyBindings = []key.Binding{
 
 // ModelChooser is a Terminal UX for selecting a local LLM model from Ollama.
 type ModelChooser struct {
-	Waiting    string // Waiting to load message (default is "Loading models..")
-	MenuPrompt string // Menu prompt (default is "Select Ollama model")
+	Waiting     string // Waiting to load message (default is "Loading models..")
+	MenuPrompt  string // Menu prompt (default is "Select Ollama model")
+	FetchOnInit bool   // FetchOnInit indicates whether to fetch the model list in Init (default: true)
 	//Filter     string // Filter for model selection (default: none)
 
 	modelList list.Model
@@ -100,6 +101,7 @@ type ModelChooser struct {
 
 	listedModels  []ListModelResponse
 	selectedModel *ListModelResponse
+	selectedName  string // Name of the selected model, for before we have a fetched list
 
 	id         int64
 	ollamaHost string // Ollama Host -- really the service's URL (default: OllamaTea default)
@@ -124,12 +126,14 @@ func NewModelChooser(ollamaHost string) ModelChooser {
 	}
 
 	return ModelChooser{
-		id:         GetNextModelChooserID(),
-		Waiting:    defaultModelChooserWaiting,
-		MenuPrompt: defaultModelChooserMenuPrompt,
-		modelList:  l,
-		spinner:    s,
-		ollamaHost: ollamaHost,
+		id:           GetNextModelChooserID(),
+		Waiting:      defaultModelChooserWaiting,
+		MenuPrompt:   defaultModelChooserMenuPrompt,
+		FetchOnInit:  true,
+		selectedName: "",
+		modelList:    l,
+		spinner:      s,
+		ollamaHost:   ollamaHost,
 	}
 }
 
@@ -138,14 +142,14 @@ func (m ModelChooser) ID() int64 {
 	return m.id
 }
 
-// GetHost returns the Ollama Host URL for the ModelChooser.
-func (m ModelChooser) GetHost() string {
+// Host returns the Ollama Host URL for the ModelChooser.
+func (m ModelChooser) Host() string {
 	return m.ollamaHost
 }
 
-// GetLastError returns the last error encountered from fetching the model list.
+// LastError returns the last error encountered from fetching the model list.
 // Returns nil if there is no error.
-func (m ModelChooser) GetLastError() error {
+func (m ModelChooser) LastError() error {
 	return m.lastError
 }
 
@@ -154,24 +158,61 @@ func (m ModelChooser) IsFetching() bool {
 	return m.isFetching
 }
 
-// GetSelectedModel returns the selected model from the ModelChooser.
+// SelectedModel returns the selected model from the ModelChooser.
 // Returns nil if there is no selected model.
-func (m ModelChooser) GetSelectedModel() *ollama.ListModelResponse {
+func (m ModelChooser) SelectedModel() *ollama.ListModelResponse {
 	return m.selectedModel
+}
+
+// SetSelectionByName sets the selection by name.
+// Returns true if nothing has been fetched yet.
+// Otherwise, returns true if the model was found and set.
+func (m *ModelChooser) SetSelectionByName(name string) bool {
+	if len(m.listedModels) == 0 {
+		m.selectedName = name
+		return true
+	}
+	for i, listedModel := range m.listedModels {
+		if listedModel.Name == name {
+			m.selectedModel = &m.listedModels[i]
+			m.modelList.Select(i)
+			m.selectedName = name
+			return true
+		}
+	}
+	return false
+}
+
+// Styles returns the list.Styles for the ModelChooser.
+func (m ModelChooser) Styles() list.Styles {
+	return m.modelList.Styles
 }
 
 // SetStyles sets a list.Styles for the TUI.
 // The Spinner is set to the list.Styles.Spinner
 // Returns nil if there is no selected model.
-func (m ModelChooser) SetStyles(styles list.Styles) ModelChooser {
+func (m *ModelChooser) SetStyles(styles list.Styles) {
 	m.spinner.Style = styles.Spinner
 	m.modelList.Styles = styles
-	return m
 }
 
-// GetStyles returns the list.Styles for the ModelChooser.
-func (m ModelChooser) GetStyles() list.Styles {
-	return m.modelList.Styles
+// Width returns the width of the model chooser
+func (m ModelChooser) Width() int {
+	return m.modelList.Width()
+}
+
+// SetWidth sets the width of the model chooser
+func (m *ModelChooser) SetWidth(w int) {
+	m.modelList.SetWidth(w)
+}
+
+// Height returns the height of the ModelChooser
+func (m ModelChooser) Height() int {
+	return m.modelList.Height()
+}
+
+func (m *ModelChooser) SetHeight(h int) {
+	m.modelList.SetHeight(h)
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -193,6 +234,13 @@ type fetchListMsg struct {
 	OllamaHost string // Ollama Host generating the response
 }
 
+// FetchListMsg is the message to send the ModelChooser to make
+// it to fetch the list of models from the Ollama server.
+func (m ModelChooser) FetchListMsg() fetchListMsg {
+	return fetchListMsg{ID: m.id, OllamaHost: m.ollamaHost}
+}
+
+// startFetchingCmd returns a command to start fetching the model list.
 func (m ModelChooser) startFetchingCmd() tea.Cmd {
 	return func() tea.Msg {
 		return FetchModelList(m.ollamaHost, m.id)
@@ -229,7 +277,10 @@ func makeModelChooserListItem(index int, model ollama.ListModelResponse) modelCh
 // Init handles the initialization of an Session
 func (m ModelChooser) Init() tea.Cmd {
 	// Fetch the list of models on the next Update
-	return Cmdize(fetchListMsg{ID: m.id, OllamaHost: m.ollamaHost})
+	if !m.FetchOnInit {
+		return nil
+	}
+	return Cmdize(m.FetchListMsg())
 }
 
 // Update handles BubbleTea messages for the Session
@@ -253,8 +304,19 @@ func (m ModelChooser) Update(msg tea.Msg) (ModelChooser, tea.Cmd) {
 		m.lastError = nil
 
 		var items []list.Item
+		selectedIndex := -1
 		for i, model := range m.listedModels {
 			items = append(items, makeModelChooserListItem(i, model))
+			if (m.selectedModel != nil && model.Name == m.selectedModel.Name) ||
+				(m.selectedName != "" && model.Name == m.selectedName) {
+				selectedIndex = i
+			}
+		}
+		if selectedIndex < 0 {
+			m.selectedModel = nil
+		} else {
+			m.modelList.Select(selectedIndex)
+			m.selectedName = m.listedModels[selectedIndex].Name
 		}
 		cmd := m.modelList.SetItems(items)
 		return m, cmd
@@ -291,7 +353,6 @@ func (m ModelChooser) Update(msg tea.Msg) (ModelChooser, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		m.modelList.SetSize(msg.Width, msg.Height)
-		m.spinner.Update(msg)
 		return m, nil
 
 	case spinner.TickMsg:

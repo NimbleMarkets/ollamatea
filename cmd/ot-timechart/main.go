@@ -104,7 +104,7 @@ func newTimechartModel(timePoints []tslc.TimePoint) timechartModel {
 	}
 	m.chart.SetViewTimeAndYRange(time.Unix(minX, 0), time.Unix(maxX, 0), minY, maxY)
 	m.chart.UpdateGraphSizes()
-	m.chatPanel = m.chatPanel.SetPlaceholder(inputTextPlaceholder)
+	m.chatPanel.SetPlaceholder(inputTextPlaceholder)
 	return m
 }
 
@@ -120,10 +120,10 @@ func (m timechartModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		// TODO: moderate chatPanel width?
-		m.chatPanel = m.chatPanel.SetHeight(msg.Height - 1)
+		m.chatPanel.SetHeight(msg.Height - 1)
 
 		// chat window has a constant width and chart size fills rest
-		chartWidth := msg.Width - m.chatPanel.Width - 2 // 2 for padding
+		chartWidth := msg.Width - m.chatPanel.Width() - 2 // 2 for padding
 		chartHeight := msg.Height - 3
 		m.chart.Resize(chartWidth, chartHeight)
 
