@@ -1,7 +1,7 @@
 // OllamaTea Copyright (c) 2024 Neomantra Corp
 // ot-simplegen
 //
-// Simple Generate TUI using OllamaTeaGen
+// Simple Generate TUI using ollamatea.ChatPanelModel
 //
 
 package main

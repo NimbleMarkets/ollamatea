@@ -19,6 +19,21 @@
             },
         },
         {
+            "name": "ot-embed",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/ot-embed/main.go",
+            "args": [
+                "-v",
+                "--in", "${workspaceFolder}/tests/hello.txt",
+                "--out", "${workspaceFolder}/tests/hello-embed.json"
+            ],
+            "env": {
+                "OLLAMATEA_MODEL": "llava",
+            },
+        },
+        {
             "name": "ot-png-prompt",
             "type": "go",
             "request": "launch",

@@ -118,30 +118,37 @@ func NewSession() Session {
 	}
 }
 
+// ID returns the unique ID of the Session
 func (s *Session) ID() int64 {
 	return s.id
 }
 
+// ISGenerating returns true if the Session is currently generating
 func (s *Session) IsGenerating() bool {
 	return s.isGenerating
 }
 
+// Response returns the last generation from the Session
 func (s *Session) Response() string {
 	return s.response
 }
 
+// Error returns the last error from the Session, if any
 func (s *Session) Error() error {
 	return s.lastError
 }
 
+// ClearResponse clears the last response from the Session
 func (s *Session) ClearResponse() {
 	s.response = ""
 }
 
+// ClearError clears the last error from the Session
 func (s *Session) ClearError() {
 	s.lastError = nil
 }
 
+// StartGenerateMsg returns a StartGenerateMsg for this Session ID
 func (s *Session) StartGenerateMsg() tea.Msg {
 	return StartGenerateMsg{ID: s.id}
 }
@@ -151,7 +158,7 @@ func (s *Session) StartGenerateMsg() tea.Msg {
 
 // Init handles the initialization of an Session
 func (m *Session) Init() tea.Cmd {
-	return waitForResponse(m.respCh) // start the response listener
+	return generateWaitForResponse(m.respCh) // start the response listener
 }
 
 // Update handles BubbleTea messages for the Session
@@ -201,7 +208,7 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		if !msg.Done {
-			return m, tea.Batch(Cmdize(respMsg), waitForResponse(m.respCh))
+			return m, tea.Batch(Cmdize(respMsg), generateWaitForResponse(m.respCh))
 		}
 
 		// We are done generating
@@ -217,7 +224,7 @@ func (m *Session) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Sequence(
 			Cmdize(respMsg),
 			Cmdize(doneMsg),
-			waitForResponse(m.respCh),
+			generateWaitForResponse(m.respCh),
 		)
 	}
 	return m, nil
@@ -235,13 +242,15 @@ func (m *Session) View() string {
 
 //////////////////////////////////////////////////////////////////////////////
 
-// startGenerating
+// startGeneratingCmd is a tea.Msg wrapper for startGenerating
 func (m *Session) startGeneratingCmd() tea.Cmd {
 	return func() tea.Msg {
 		return m.startGenerating()
 	}
 }
 
+// startGenerating starts generation for a Session
+// Performs the actual Ollama /generate call
 func (m *Session) startGenerating() tea.Msg {
 	if m.isGenerating {
 		return nil
@@ -300,8 +309,8 @@ func makeGenerateDoneErrorMsg(id int64, err error) tea.Msg {
 
 //////////////////////////////////////////////////////////////////////////////
 
-// A command that waits for the responses on the channel
-func waitForResponse(sub chan generateResponseMsg) tea.Cmd {
+// generateWaitForResponse is a command that waits for the responses on the channel
+func generateWaitForResponse(sub chan generateResponseMsg) tea.Cmd {
 	return func() tea.Msg {
 		return generateResponseMsg(<-sub)
 	}

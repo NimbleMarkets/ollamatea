@@ -36,11 +36,13 @@ To install OllamaTea's various [`ot-` tools](#tools):
 
  * [Components](#components)
    * [`ollamatea.Session`](#ollamatea-session)
+   * [`ollamatea.EmbedSession`](#ollamatea-embedsession)
    * [`ollamatea.ChatPanelModel`](#ollamatea-chatpanelmodel)
    * [`ollamatea.ModelChooser`](#ollamatea-modelchooser)
  * [Configuration](#configuration)
  * [Tools](#tools)
    * [`ot-ansi-to-image`](#ot-ansi-to-image)
+   * [`ot-embed`](#ot-embed)
    * [`ot-model-chooser`](#ot-model-chooser)
    * [`ot-png-prompt`](#ot-png-prompt)
    * [`ot-simplegen`](#ot-simplegen)
@@ -53,7 +55,7 @@ To install OllamaTea's various [`ot-` tools](#tools):
 
 ### `ollamatea.Session`
 
-The main OllamaTea component is `ollamatea.Session`, which exposes the [Ollama API](https://github.com/ollama/ollama/blob/main/docs/api.md) using the BubbleTea framework.  The `ollamatea.Session` struct holds Ollama session data for generating completions, such as its host and prompt, and handles server responses.   Each `ollamatea.Session` corresponds to the idea of an `ollama run` session.
+The main OllamaTea component is `ollamatea.Session`, which exposes the [Ollama API](https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion) using the BubbleTea framework.  The `ollamatea.Session` struct holds Ollama session data for generating completions, such as its host and prompt, and handles server responses.   Each `ollamatea.Session` corresponds to the idea of an `ollama run` session.
 
  `ollamatea.Session` implements the [BubbleTea `Model` interface](https://pkg.go.dev/github.com/charmbracelet/bubbletea#Model) and exposes it via the [BubbleTea Command system](https://github.com/charmbracelet/bubbletea/tree/master/tutorials/commands).   Note that a [BubbleTea Model](https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#the-model) is unrelated to an [Ollama LLM model](https://ollama.com/library).  `ollamatea.Session` implements a BubbleTea `tea.Model`, while `ollamatea.Session.Model` holds the Ollama model name for generation.
 
@@ -75,6 +77,10 @@ type (m model) Init() tea.Cmd {
 Also note that `ollamatea.Session` methods take pointer receivers, rather than value receivers.  This is a little different than most BubbleTea components, but eases internal state management.
 
 To see an example of using `ollamatea.Session`, see [the implementation](./ollamatea_chat.go) of the `ollamatea.ChatPanelModel` component described in the next session.
+
+### `ollamatea.EmbedSession`
+
+The `ollamatea.EmbedSession` exposes the [Ollama Embed API](https://github.com/ollama/ollama/blob/main/docs/api.md#generate-embeddings) call to the BubbleTea command system.  Once it receives a `StartEmbedMsg`, it will make its request and end up with and [Ollama embedding response](https://github.com/ollama/ollama/blob/main/api/types.go#L266) or an error.  These 
 
 ### `ollamatea.ChatPanelModel`
 
@@ -110,7 +116,7 @@ To exercise the library, there a some CLI tools:
 `ot-ansi-to-image` converts ANSI-encoded text into a PNG image:
 
 ```
-$ usage:  ot-ansi-to-png [--help] [--in <ansitext-filename>] --out <png-filename>
+usage:  ot-ansi-to-png [--help] [--in <ansitext-filename>] --out <png-filename>
 
 Converts input ANSI terminal text from stdin (or a file with --in)
 and renders it visually as a PNG image file saved to --out.
@@ -122,6 +128,26 @@ Example:  $ echo -e "\033[31mHello\033[0m World" | ot-ansi-to-png --out hello.pn
       --help         show help
   -i, --in string    Input text filename (default: stdin)
   -o, --out string   Output PNG filename ('-' is stdout)
+```
+
+### `ot-embed`
+
+`ot-embed` extracts embeddings a given input data, demonstrating the `ollamatea.EmbedSession` component.
+
+```
+usage:  ./bin/ot-embed [--help] [options] --in <input-filename>
+
+Creates an embedding for the input data.
+Outputs as JSON to output, or per --out.
+
+Example:  $ ot-embed --in hello.txt -m llava
+
+      --help           show help
+  -h, --host string    Host for Ollama (also OLLAMATEA_HOST env) (default "http://localhost:11434")
+  -i, --in string      Input filename ('-' is stdin)
+  -m, --model string   Model for Ollama (also OLLAMATEA_MODEL env) (default "llama3.2-vision:11b")
+  -o, --out string     Output filename ('-' is stdout)
+  -v, --verbose        verbose output
 ```
 
 ### `ot-model-chooser`
